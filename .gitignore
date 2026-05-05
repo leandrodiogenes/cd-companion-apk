@@ -4,6 +4,11 @@ local.properties
 .idea/
 .DS_Store
 .openclaude/
+.codebuddy/
+.kiro/
+.cursor/
+.windsurf/
+.copilot/
 build/
 captures/
 *.apk
