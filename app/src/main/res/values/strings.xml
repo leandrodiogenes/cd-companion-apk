@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">CD Companion</string>
-    <string name="settings">Configurações</string>
-    <string name="fullscreen">Tela cheia</string>
-    <string name="exit_fullscreen">Sair da tela cheia</string>
+    <string name="settings">Settings</string>
+    <string name="fullscreen">Fullscreen</string>
+    <string name="exit_fullscreen">Exit fullscreen</string>
 </resources>

@@ -25,7 +25,7 @@ class SettingsActivity : AppCompatActivity() {
             val host = etHost.text.toString().trim()
             val port = etPort.text.toString().toIntOrNull() ?: 7891
             if (host.isEmpty()) {
-                Toast.makeText(this, "IP inválido", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Invalid IP address", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             prefs.edit()

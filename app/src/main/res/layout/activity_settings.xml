@@ -8,7 +8,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="IP do PC"
+        android:text="PC IP Address"
         android:textSize="14sp" />
 
     <EditText
@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Porta"
+        android:text="Port"
         android:textSize="14sp" />
 
     <EditText
@@ -37,6 +37,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Salvar" />
+        android:text="Save" />
 
 </LinearLayout>

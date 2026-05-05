@@ -173,9 +173,9 @@ class MainActivity : AppCompatActivity() {
     private fun checkForUpdate() {
         UpdateChecker.check(this, BuildConfig.VERSION_NAME) { tag, url ->
             AlertDialog.Builder(this)
-                .setTitle("Atualização disponível")
-                .setMessage("Versão $tag disponível. Deseja baixar e instalar?")
-                .setPositiveButton("Atualizar") { _, _ ->
+                .setTitle("Update available")
+                .setMessage("Version $tag is available. Download and install?")
+                .setPositiveButton("Update") { _, _ ->
                     if (!packageManager.canRequestPackageInstalls()) {
                         startActivity(
                             Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
@@ -184,11 +184,11 @@ class MainActivity : AppCompatActivity() {
                         )
                         return@setPositiveButton
                     }
-                    val toast = Toast.makeText(this, "Baixando atualização…", Toast.LENGTH_LONG)
+                    val toast = Toast.makeText(this, "Downloading update…", Toast.LENGTH_LONG)
                     toast.show()
                     UpdateChecker.downloadAndInstall(this, url) { toast.cancel() }
                 }
-                .setNegativeButton("Agora não", null)
+                .setNegativeButton("Later", null)
                 .show()
         }
     }
@@ -209,7 +209,7 @@ class MainActivity : AppCompatActivity() {
             supportActionBar?.hide()
             isFullscreen = true
             getSharedPreferences("cdcompanion", MODE_PRIVATE).edit().putBoolean("fullscreen", true).apply()
-            Toast.makeText(this, "Toque duas vezes para sair da tela cheia", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Double tap anywhere to exit fullscreen", Toast.LENGTH_LONG).show()
         }
         invalidateOptionsMenu()
     }
