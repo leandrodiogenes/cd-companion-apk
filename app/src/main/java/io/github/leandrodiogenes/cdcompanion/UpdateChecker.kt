@@ -17,7 +17,7 @@ import java.io.IOException
 
 object UpdateChecker {
     private const val RELEASES_URL =
-        "https://api.github.com/repos/leandrodiogenes/cd-companion-app/releases/latest"
+        "https://api.github.com/repos/leandrodiogenes/cd-companion-apk/releases/latest"
 
     private val client = OkHttpClient()
     private val handler = Handler(Looper.getMainLooper())
