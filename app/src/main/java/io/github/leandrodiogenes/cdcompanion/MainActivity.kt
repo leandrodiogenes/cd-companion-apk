@@ -66,8 +66,7 @@ class MainActivity : AppCompatActivity() {
         )
         reconnectFromPrefs()
 
-        val prefs = getSharedPreferences("cdcompanion", MODE_PRIVATE)
-        if (prefs.getBoolean("fullscreen", false)) toggleFullscreen()
+        toggleFullscreen()
 
         checkForUpdate()
     }
@@ -172,9 +171,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkForUpdate() {
         UpdateChecker.check(this, BuildConfig.VERSION_NAME) { tag, url ->
-            AlertDialog.Builder(this)
-                .setTitle("Update available")
-                .setMessage("Version $tag is available. Download and install?")
+            val dialog = AlertDialog.Builder(this)
+                .setTitle("Update required")
+                .setMessage("Version $tag is required to use this app. Please update to continue.")
+                .setCancelable(false)
                 .setPositiveButton("Update") { _, _ ->
                     if (!packageManager.canRequestPackageInstalls()) {
                         startActivity(
@@ -188,8 +188,10 @@ class MainActivity : AppCompatActivity() {
                     toast.show()
                     UpdateChecker.downloadAndInstall(this, url) { toast.cancel() }
                 }
-                .setNegativeButton("Later", null)
-                .show()
+                .setNegativeButton("Exit") { _, _ -> finish() }
+                .create()
+            dialog.show()
+            webView.isEnabled = false
         }
     }
 
