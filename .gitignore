@@ -13,3 +13,4 @@ build/
 captures/
 *.apk
 *.aab
+app/release/
