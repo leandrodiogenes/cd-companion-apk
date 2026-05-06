@@ -36,7 +36,7 @@ object UpdateChecker {
                 try {
                     val json = JSONObject(body)
                     val tag = json.getString("tag_name").trimStart('v')
-                    if (tag == currentVersion) return
+                    if (compareVersions(tag, currentVersion) <= 0) return
                     val assets = json.getJSONArray("assets")
                     for (i in 0 until assets.length()) {
                         val asset = assets.getJSONObject(i)
@@ -49,6 +49,17 @@ object UpdateChecker {
                 } catch (_: Exception) {}
             }
         })
+    }
+
+    private fun compareVersions(a: String, b: String): Int {
+        val pa = a.split(".").map { it.toIntOrNull() ?: 0 }
+        val pb = b.split(".").map { it.toIntOrNull() ?: 0 }
+        val len = maxOf(pa.size, pb.size)
+        for (i in 0 until len) {
+            val diff = (pa.getOrElse(i) { 0 }) - (pb.getOrElse(i) { 0 })
+            if (diff != 0) return diff
+        }
+        return 0
     }
 
     fun downloadAndInstall(context: Context, url: String, onDone: () -> Unit) {

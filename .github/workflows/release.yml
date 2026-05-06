@@ -1,0 +1,46 @@
+name: Build and Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Decode keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
+
+      - name: Build signed APK
+        env:
+          KEYSTORE_PATH: ${{ github.workspace }}/keystore.jks
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew assembleRelease
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/release/app-release.apk
+          generate_release_notes: false
+          body: |
+            ## Installation
+
+            1. Download `app-release.apk` below
+            2. On your Android device, enable **Install unknown apps** for your browser
+            3. Open the APK and install
+            4. Open the app, tap the settings icon and set your PC's local IP

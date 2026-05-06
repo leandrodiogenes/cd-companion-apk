@@ -96,6 +96,13 @@ class MainActivity : AppCompatActivity() {
         }, "Android")
 
         webView.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                val host = android.net.Uri.parse(url).host ?: return true
+                if (host == "mapgenie.io" || host.endsWith(".mapgenie.io")) return false
+                startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)))
+                return true
+            }
+
             override fun onPageFinished(view: WebView, url: String) {
                 injectJs()
             }
@@ -171,10 +178,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkForUpdate() {
         UpdateChecker.check(this, BuildConfig.VERSION_NAME) { tag, url ->
-            val dialog = AlertDialog.Builder(this)
-                .setTitle("Update required")
-                .setMessage("Version $tag is required to use this app. Please update to continue.")
-                .setCancelable(false)
+            AlertDialog.Builder(this)
+                .setTitle("Update available")
+                .setMessage("Version $tag is available. Update now?")
+                .setCancelable(true)
                 .setPositiveButton("Update") { _, _ ->
                     if (!packageManager.canRequestPackageInstalls()) {
                         startActivity(
@@ -184,14 +191,12 @@ class MainActivity : AppCompatActivity() {
                         )
                         return@setPositiveButton
                     }
-                    val toast = Toast.makeText(this, "Downloading update…", Toast.LENGTH_LONG)
+                    val toast = Toast.makeText(this, "Downloading update...", Toast.LENGTH_LONG)
                     toast.show()
                     UpdateChecker.downloadAndInstall(this, url) { toast.cancel() }
                 }
-                .setNegativeButton("Exit") { _, _ -> finish() }
-                .create()
-            dialog.show()
-            webView.isEnabled = false
+                .setNegativeButton("Later") { dialog, _ -> dialog.dismiss() }
+                .show()
         }
     }
 
@@ -228,6 +233,14 @@ class MainActivity : AppCompatActivity() {
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         gestureDetector.onTouchEvent(ev)
         return super.dispatchTouchEvent(ev)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val url = webView.url ?: ""
+        if (!url.contains("mapgenie.io")) {
+            webView.loadUrl("https://mapgenie.io/crimson-desert/maps/pywel")
+        }
     }
 
     override fun onDestroy() {

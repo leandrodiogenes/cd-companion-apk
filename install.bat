@@ -16,5 +16,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
+echo Launching app...
+adb shell monkey -p io.github.leandrodiogenes.cdcompanion -c android.intent.category.LAUNCHER 1 >nul 2>&1
+
 echo Done.
 pause
