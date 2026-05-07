@@ -42,15 +42,15 @@ jobs:
         run: |
           STORE_PASSWORD=$(printf '%s' "$STORE_PASSWORD_B64" | base64 -d)
           KEY_PASSWORD=$(printf '%s' "$KEY_PASSWORD_B64" | base64 -d)
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
           mkdir -p app/release
-          jarsigner \
-            -keystore keystore.jks \
-            -storetype PKCS12 \
-            -storepass "$STORE_PASSWORD" \
-            -keypass "$KEY_PASSWORD" \
-            -signedjar app/release/app-release.apk \
-            app/build/outputs/apk/release/app-release-unsigned.apk \
-            "$KEY_ALIAS"
+          "$APKSIGNER" sign \
+            --ks keystore.jks \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-pass "pass:$STORE_PASSWORD" \
+            --key-pass "pass:$KEY_PASSWORD" \
+            --out app/release/app-release.apk \
+            app/build/outputs/apk/release/app-release-unsigned.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
