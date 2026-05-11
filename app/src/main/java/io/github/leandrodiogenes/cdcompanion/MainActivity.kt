@@ -86,6 +86,23 @@ class MainActivity : AppCompatActivity() {
         webView.addJavascriptInterface(object : Any() {
             @JavascriptInterface
             fun sendCmd(json: String) {
+                try {
+                    val obj = JSONObject(json)
+                    if (obj.optString("cmd") == "set_server_config") {
+                        val prefs = getSharedPreferences("cdcompanion", MODE_PRIVATE)
+                        val editor = prefs.edit()
+                        if (obj.has("wsHost") && !obj.isNull("wsHost"))
+                            editor.putString("ws_host", obj.getString("wsHost"))
+                        if (obj.has("wsPort") && !obj.isNull("wsPort"))
+                            editor.putInt("ws_port", obj.getInt("wsPort"))
+                        editor.apply()
+                        runOnUiThread {
+                            wsClient.disconnect()
+                            reconnectFromPrefs()
+                        }
+                        return
+                    }
+                } catch (_: Exception) {}
                 wsClient.send(json)
             }
 
@@ -129,6 +146,7 @@ class MainActivity : AppCompatActivity() {
             status.put("type", "status")
             status.put("connected", connected)
             forwardToJs(status.toString())
+            notifyJsServerConfig()
         }
     }
 
@@ -227,7 +245,19 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == REQUEST_SETTINGS) {
             wsClient.disconnect()
             reconnectFromPrefs()
+            notifyJsServerConfig()
         }
+    }
+
+    private fun notifyJsServerConfig() {
+        val prefs = getSharedPreferences("cdcompanion", MODE_PRIVATE)
+        val host = prefs.getString("ws_host", "10.0.0.9") ?: "10.0.0.9"
+        val port = prefs.getInt("ws_port", 7891)
+        val msg = JSONObject()
+        msg.put("type", "server_config")
+        msg.put("wsHost", host)
+        msg.put("wsPort", port)
+        forwardToJs(msg.toString())
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
