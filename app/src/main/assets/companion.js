@@ -738,7 +738,7 @@
       </div>
       <div style="display:flex;align-items:center;gap:7px">
         <span style="color:#bbb;font-size:11px;white-space:nowrap">Y <span id="cdp-center-panel-y-val">${Math.round(centerTeleportY)}</span></span>
-        <input type="range" id="cdp-center-panel-y" min="-5000" max="5000" step="10"
+        <input type="range" id="cdp-center-panel-y" min="0" max="5000" step="5"
           value="${centerTeleportY}">
       </div>
       <button id="cdp-center-panel-tp" title="Teleportar para o centro da tela"
@@ -757,6 +757,16 @@
     document.getElementById('cdp-center-panel-tp').addEventListener('click', teleportMapCenter);
   }
 
+  function updateWpPanelHeight() {
+    const panel = document.getElementById('cdp-wp-panel');
+    if (!panel) return;
+    const portrait = window.innerHeight > window.innerWidth;
+    const ratio = portrait ? 0.5 : 0.7;
+    panel.style.maxHeight = Math.round(window.innerHeight * ratio) + 'px';
+  }
+
+  window.addEventListener('resize', updateWpPanelHeight);
+
   function ensureWaypointPanel() {
     if (document.getElementById('cdp-wp-panel')) return;
     const el = document.createElement('div');
@@ -765,7 +775,7 @@
       'background:rgba(12,12,18,.92);color:#e8e8e8;' +
       "font:12px/1.5 'Segoe UI',system-ui,sans-serif;" +
       'border:1px solid rgba(255,208,96,.25);border-radius:7px;' +
-      'padding:8px 10px;width:224px;max-height:520px;' +
+      'padding:8px 10px;width:224px;' +
       'backdrop-filter:blur(5px);box-shadow:0 4px 18px rgba(0,0,0,.5);' +
       'display:none;flex-direction:column;gap:5px;overflow:hidden';
     el.innerHTML = `
@@ -773,18 +783,19 @@
         <span style="color:#ffd060;font-weight:600;flex:1;font-size:12px">⭕ Waypoints</span>
         <button id="cdp-wp-save" title="Save current position"
           style="background:rgba(255,208,96,.15);border:1px solid rgba(255,208,96,.4);
-          color:#ffd060;font:11px 'Segoe UI';padding:2px 8px;border-radius:4px;cursor:pointer">
+          color:#ffd060;font:14px 'Segoe UI';padding:5px 14px;border-radius:4px;cursor:pointer;min-height:36px">
           + Save
         </button>
       </div>
       <input id="cdp-wp-filter" placeholder="Filtrar waypoints"
         style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
-        color:#e8e8e8;font:11px 'Segoe UI';padding:4px 7px;border-radius:4px;outline:none">
-      <div id="cdp-wp-list" style="overflow-y:auto;max-height:170px;display:flex;
-        flex-direction:column;gap:3px;flex-shrink:0"></div>
+        color:#e8e8e8;font:14px 'Segoe UI';padding:5px 9px;border-radius:4px;outline:none">
+      <div id="cdp-wp-list" style="overflow-y:auto;flex:1;min-height:0;display:flex;
+        flex-direction:column;gap:3px"></div>
     `;
     document.body.appendChild(el);
 
+    updateWpPanelHeight();
     document.getElementById('cdp-wp-filter').addEventListener('input', (e) => setWaypointFilter(e.target.value));
     document.getElementById('cdp-wp-save').addEventListener('click', () => {
       const name = prompt('Nome do waypoint:', lastPos
@@ -828,17 +839,19 @@
       return;
     }
     list.innerHTML = items.map(({ wp, i }) => `
-      <div style="display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.04);
-        border-radius:4px;padding:3px 6px;">
-        <span style="flex:1;font-size:11px;white-space:nowrap;overflow:hidden;
+      <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.04);
+        border-radius:5px;padding:8px 10px;min-height:44px;">
+        <span style="flex:1;font-size:13px;white-space:nowrap;overflow:hidden;
           text-overflow:ellipsis;color:#ccc" title="${wp.name}">${wp.name}</span>
         <button data-tp="${i}" title="Teleportar"
           style="background:rgba(255,208,96,.15);border:1px solid rgba(255,208,96,.35);
-          color:#ffd060;font:10px 'Segoe UI';padding:1px 5px;border-radius:3px;
-          cursor:pointer;flex-shrink:0">⭕</button>
+          color:#ffd060;font:12px 'Segoe UI';padding:5px 10px;border-radius:4px;
+          cursor:pointer;flex-shrink:0;min-height:36px">⭕</button>
         <button data-del="${i}" title="Remover"
-          style="background:transparent;border:none;color:#555;font:12px monospace;
-          cursor:pointer;padding:0 2px;flex-shrink:0">✕</button>
+          style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+          color:#888;font:14px monospace;cursor:pointer;padding:0;flex-shrink:0;
+          width:36px;height:36px;border-radius:4px;display:flex;align-items:center;
+          justify-content:center">✕</button>
       </div>
     `).join('');
 
@@ -865,6 +878,7 @@
         wsStatus = msg.connected ? 'connected' : 'disconnected';
         if (msg.connected) {
           sendCmd({ cmd: 'client_options', clientName: 'android' });
+          sendCmd({ cmd: 'get_waypoints' });
         }
         updateOverlay();
         return;
