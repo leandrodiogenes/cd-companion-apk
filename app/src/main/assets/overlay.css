@@ -44,8 +44,8 @@
   background: rgba(255, 200, 80, 0.15);
   border: 1px solid rgba(255, 200, 80, 0.4);
   color: #ffd060;
-  font: 11px/1 'Segoe UI', sans-serif;
-  padding: 3px 7px;
+  font: 13px/1 'Segoe UI', sans-serif;
+  padding: 3px 8px;
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.15s;
@@ -82,8 +82,8 @@
   background: rgba(255, 200, 80, 0.1);
   border: 1px solid rgba(255, 200, 80, 0.3);
   color: #aaa;
-  font: 13px/1 'Segoe UI', sans-serif;
-  padding: 2px 6px;
+  font: 15px/1 'Segoe UI', sans-serif;
+  padding: 2px 7px;
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
